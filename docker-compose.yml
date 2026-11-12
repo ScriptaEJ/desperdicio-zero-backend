@@ -1,0 +1,48 @@
+services:
+
+  db:
+    container_name: desperdicio-zero-db
+    image: postgres:16-alpine
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", $POSTGRES_USER, "-d", $POSTGRES_DB]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    env_file: .env
+    networks: 
+      - rede_local
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+
+  api:
+    container_name: desperdicio-zero-api
+    build: 
+      context: .
+    ports: 
+      - 5000:5000
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sg -c "alembic upgrade head && uvicorn app.main:app --port 5000 --host 0.0.0.0"
+    networks: 
+      - rede_local
+
+  adminer:
+    container_name: desperdicio-zero-adminer
+    image: adminer
+    ports: 
+      - 8080:8080
+    networks: 
+      - rede_local
+
+networks:
+  rede_local:
+    driver:
+      bridge
+
+volumes:
+  postgres_data:

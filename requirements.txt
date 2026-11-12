@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlalchemy
+dotenv
+alembic
+psycopg2-binary
+pydantic
+slowapi
+python-jose
+resend
+werkzeug
+pydantic[email]

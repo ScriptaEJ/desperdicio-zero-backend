@@ -5,6 +5,7 @@ from enum import Enum
 
 class PerfilUsuario(str, Enum):
     user = "user"
+    admin = "admin"
 
 
 class TipoRegistroPerda(str, Enum):

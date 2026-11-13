@@ -28,7 +28,7 @@ def create_user(
     register_user(data, db)
     return {"message": "Conta criada com sucesso"}
 
-@user_routes.get("/users", response_model=UsuariosPaginados, dependencies=[Depends(autorizar_perfis("admin"))])
+@user_routes.get("/users", response_model=UsuariosPaginados, dependencies=[Depends(autorizar_perfis("user"))])
 def listar_user(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
@@ -37,7 +37,7 @@ def listar_user(
     return listar_users(db, page, size)
 
 
-@user_routes.get("/users/{id}", response_model=UsuarioResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+@user_routes.get("/users/{id}", response_model=UsuarioResponse, dependencies=[Depends(autorizar_perfis("user"))])
 def get_user_by_id(
     id: int,
     db: Session = Depends(get_db),
@@ -45,7 +45,7 @@ def get_user_by_id(
     return get_user_id(id, db)
 
 
-@user_routes.patch("/user/{id}", response_model=UsuarioResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+@user_routes.patch("/user/{id}", response_model=UsuarioResponse, dependencies=[Depends(autorizar_perfis("user"))])
 def update_user_by_id(
     id: int,
     data: UpdateUser,
@@ -54,7 +54,7 @@ def update_user_by_id(
     return update_user(id, data, db)
 
 
-@user_routes.delete("/user/{id}")
+@user_routes.delete("/user/{id}", dependencies=[Depends(autorizar_perfis("user"))])
 def delete_user_by_id(
     id: int,
     db: Session = Depends(get_db),

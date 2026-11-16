@@ -54,7 +54,7 @@ def update_user_by_id(
     return update_user(id, data, db)
 
 
-@user_routes.delete("/user/{id}")
+@user_routes.delete("/user/{id}", dependencies=[Depends(autorizar_perfis("admin"))])
 def delete_user_by_id(
     id: int,
     db: Session = Depends(get_db),

@@ -1,3 +1,4 @@
+
 from math import ceil
 from jose import jwt
 
@@ -8,16 +9,19 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.middlewares.auth import SECRET, ALGORITHM
 from app.models.usuario_model import Usuario
 from app.schemas.usuario_schema import UpdateUser
-from app.exceptions.exceptions import DadosInvalidos, ContaExistente, UserNotFound, DesactivatedUser
+from app.exceptions.exceptions import (
+    DadosInvalidos,
+    ContaExistente,
+    UserNotFound,
+    DesactivatedUser,
+)
 
-#------------------------------ Login -----------------------------------
 
+# Login
 def login_user(data, db: Session):
     email = data.email.strip().lower()
 
-    user = db.query(Usuario).filter(
-        Usuario.email == email
-    ).first()
+    user = db.query(Usuario).filter(Usuario.email == email).first()
 
     if not user:
         raise DadosInvalidos()
@@ -25,7 +29,7 @@ def login_user(data, db: Session):
     if not user.ativo:
         raise DesactivatedUser()
 
-    if not check_password_hash(user.senha_hash, data.senha):
+    if not check_password_hash(user.senha, data.senha):
         raise DadosInvalidos()
 
     payload = {
@@ -38,13 +42,11 @@ def login_user(data, db: Session):
 
     return {
         "access_token": token,
-        "token_type": "bearer",
+        "token_type": "bearer"
     }
 
 
-#-------------------------- Lógicas de Criar, Listar, Atualizar e Deletar (Usuarios) ----------------------
-
-#--------------------------- Criar ---------------------------
+# Cadastro
 def register_user(data, db: Session):
     email = data.email.strip().lower()
     senha = data.senha
@@ -54,9 +56,7 @@ def register_user(data, db: Session):
     if not email or not senha or not nome or not perfil:
         raise DadosInvalidos()
 
-    user = db.query(Usuario).filter(
-        Usuario.email == email
-    ).first()
+    user = db.query(Usuario).filter(Usuario.email == email).first()
 
     if user:
         raise ContaExistente()
@@ -65,7 +65,7 @@ def register_user(data, db: Session):
 
     novo_user = Usuario(
         email=email,
-        senha_hash=senha_hash,
+        senha=senha_hash,
         nome=nome,
         perfil=perfil,
         ativo=True,
@@ -78,7 +78,7 @@ def register_user(data, db: Session):
     return novo_user
 
 
-#---------------------------- Listar (com paginação) e com ID -----------------------------
+# Listagem
 def listar_users(db: Session, page: int, size: int):
     total = db.query(Usuario).count()
 
@@ -97,16 +97,18 @@ def listar_users(db: Session, page: int, size: int):
         "items": dados
     }
 
-def get_user_id(id, db: Session):
-    user = db.query(Usuario).filter(Usuario.id == id).first()
 
+# Buscar usuário por ID
+def get_user_id(id: int, db: Session):
+    user = db.query(Usuario).filter(Usuario.id == id).first()
 
     if not user:
         raise UserNotFound()
 
     return user
 
-#--------------------------------- Atualizar ---------------------------
+
+# Atualizar usuário
 def update_user(id: int, data: UpdateUser, db: Session):
     user = get_user_id(id, db)
 
@@ -119,19 +121,19 @@ def update_user(id: int, data: UpdateUser, db: Session):
     for campo, valor in dados_atualizados.items():
         setattr(user, campo, valor)
 
-        db.commit()
-        db.refresh(user)
-        
-        return user
+    db.commit()
+    db.refresh(user)
 
-#--------------------------- Deletar ------------------------------
+    return user
+
+
+# Desativar usuário
 def delete_user(id: int, db: Session):
-    user = db.query(Usuario).filter(Usuario.id == id).first()
-
-    if not user:
-        raise UserNotFound()
+    user = get_user_id(id, db)
 
     user.ativo = False
 
     db.commit()
     db.refresh(user)
+
+    return user

@@ -34,3 +34,13 @@ class TokenNaoAutenticado(Exception):
     def __init__(self, message='Token não autenticado.'):
             self.message=message
             super().__init__(message)
+
+class RestauranteNaoEncontrado(Exception):
+    def __init__(self, message='Restaurante não encontrado.'):
+            self.message=message
+            super().__init__(message)
+
+class RestauranteJaExiste(Exception):
+    def __init__(self, message='Restaurante já existe.'):
+            self.message=message
+            super().__init__(message)

@@ -16,7 +16,7 @@ SECRET = os.getenv("JWT_SECRET")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
 security = HTTPBearer()
 
-Perfil = Literal["user"]
+Perfil = Literal["user", "admin"]
 
 # ----------------------- AUTENTICAÇÃO -----------------------
 

@@ -1,6 +1,6 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from app.exceptions.exceptions import UsuarioNaoAutorizado, TokenNaoAutenticado, ContaExistente, DadosInvalidos, UserNotFound, DistinctPasswords, DesactivatedUser
+from app.exceptions.exceptions import UsuarioNaoAutorizado, TokenNaoAutenticado, ContaExistente, DadosInvalidos, UserNotFound, DistinctPasswords, DesactivatedUser, RestauranteNaoEncontrado, RestauranteJaExiste
 
 async def user_not_found_handler(request: Request, exc: UserNotFound):
     return JSONResponse(
@@ -52,6 +52,22 @@ async def dados_invalidos(request: Request, exc: DadosInvalidos):
     )
 
 async def conta_existente(request: Request, exc: ContaExistente):
+    return JSONResponse(
+        status_code=409,
+        content={
+            'detail': exc.message
+        }
+    )
+
+async def restaurante_nao_encontrado(request: Request, exc: RestauranteNaoEncontrado):
+    return JSONResponse(
+        status_code=404,
+        content={
+            'detail': exc.message
+        }
+    )
+
+async def restaurante_ja_existe(request: Request, exc: RestauranteJaExiste):
     return JSONResponse(
         status_code=409,
         content={

@@ -44,3 +44,15 @@ class RestauranteJaExiste(Exception):
     def __init__(self, message='Restaurante já existe.'):
             self.message=message
             super().__init__(message)
+
+class InsumoNaoEncontrado(Exception):
+    def __init__(self, message='Insumo não encontrado.'):
+            self.message=message
+            super().__init__(message)
+
+class DadosInvalidosInsumo(Exception):
+    def __init__(self, message='Dados Inválidos.'):
+            self.message=message
+            super().__init__(message)
+
+

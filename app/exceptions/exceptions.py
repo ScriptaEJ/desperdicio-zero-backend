@@ -56,3 +56,14 @@ class DadosInvalidosInsumo(Exception):
             super().__init__(message)
 
 
+class PerdaNaoEncontrada(Exception):
+    def __init__(self, message='Registro de perda não encontrado.'):
+            self.message=message
+            super().__init__(message)
+
+class PerdaDadosInvalidos(Exception):
+    def __init__(self, message='Dados Inválidos.'):
+            self.message=message
+            super().__init__(message)
+
+

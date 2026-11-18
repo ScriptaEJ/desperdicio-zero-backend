@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.models.insumo_model import Insumo
 from app.schemas.insumos_schemas import CreateInsumo, UpdateInsumo
-from exceptions.exceptions import InsumoNaoEncontrado, DadosInvalidosInsumo
+from app.exceptions.exceptions import InsumoNaoEncontrado, DadosInvalidosInsumo
 
 
 

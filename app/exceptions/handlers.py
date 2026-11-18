@@ -1,7 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from app.exceptions.exceptions import UsuarioNaoAutorizado, TokenNaoAutenticado, ContaExistente, DadosInvalidos, UserNotFound, DistinctPasswords, DesactivatedUser, RestauranteNaoEncontrado, RestauranteJaExiste
-from app.exceptions.exceptions import InsumoNaoEncontrado, DadosInvalidosInsumo
+from app.exceptions.exceptions import InsumoNaoEncontrado, DadosInvalidosInsumo, PerdaNaoEncontrada, PerdaDadosInvalidos
 
 async def user_not_found_handler(request: Request, exc: UserNotFound):
     return JSONResponse(
@@ -85,6 +85,21 @@ async def insumo_nao_encontrado(request: Request, exc: InsumoNaoEncontrado):
     )
 
 async def dados_invalidos_insumo(request: Request, exc: DadosInvalidosInsumo):
+    return JSONResponse(
+        status_code=400,
+        content={
+            'detail': exc.message
+        }
+    )
+
+async def perda_nao_encontrada(request: Request, exc: PerdaNaoEncontrada):
+    return JSONResponse(
+        status_code=404,
+        content={
+            'detail': exc.message
+        }
+    )
+async def perda_dados_invalidos(request: Request, exc: PerdaDadosInvalidos):
     return JSONResponse(
         status_code=400,
         content={

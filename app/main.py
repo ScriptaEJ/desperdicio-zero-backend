@@ -6,6 +6,7 @@ from app.routes.auth_routes import auth_routes
 from app.routes.usuario_routes import user_routes
 from app.routes.insumos_routes import insumos_routes
 from app.routes.perda_routes import perda_router
+from app.routes.dashboard_routes import dashboard_routes
 from app.routes.restaurante_routes import router as restaurante_router
 app = FastAPI()
 
@@ -88,6 +89,7 @@ app.include_router(user_routes, prefix='/api')
 app.include_router(insumos_routes, prefix='/api')
 app.include_router(restaurante_router, prefix='/api')
 app.include_router(perda_router, prefix='/api')
+app.include_router(dashboard_routes, prefix='/api')
 
 @app.get('/')
 def root():

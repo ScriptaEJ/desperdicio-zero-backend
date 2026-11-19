@@ -2,7 +2,6 @@
 
 from app.database.database import Base
 from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
 
 
 class RestauranteUsuario(Base):

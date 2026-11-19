@@ -2,7 +2,6 @@
 
 from app.database.database import Base
 from sqlalchemy import Column, String, Numeric, DateTime, text, Integer
-from sqlalchemy.dialects.postgresql import UUID
 
 
 class Restaurante(Base):

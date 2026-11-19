@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.middlewares.auth import autorizar_perfis
@@ -29,7 +27,7 @@ def create_restaurante_endpoint(
 
 @router.get("/{restaurante_id}", response_model=RestauranteResponse, dependencies=[Depends(autorizar_perfis("admin"))])
 def get_restaurante_endpoint(
-    restaurante_id: UUID, db: Session = Depends(get_db)
+    restaurante_id: int, db: Session = Depends(get_db)
 ):
     restaurante = get_restaurante_by_id(db, restaurante_id)
     if not restaurante:
@@ -46,7 +44,7 @@ def get_restaurantes_paginated_endpoint(
 
 @router.put("/{restaurante_id}", response_model=RestauranteResponse, dependencies=[Depends(autorizar_perfis("admin"))])
 def update_restaurante_endpoint(
-    restaurante_id: UUID,
+    restaurante_id: int,
     restaurante_update: UpdateRestaurante,
     db: Session = Depends(get_db)
 ):
@@ -57,7 +55,7 @@ def update_restaurante_endpoint(
 
 @router.delete("/{restaurante_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(autorizar_perfis("admin"))])
 def delete_restaurante_endpoint(
-    restaurante_id: UUID, db: Session = Depends(get_db)
+    restaurante_id: int, db: Session = Depends(get_db)
 ):
     success = delete_restaurante(db, restaurante_id)
     if not success:

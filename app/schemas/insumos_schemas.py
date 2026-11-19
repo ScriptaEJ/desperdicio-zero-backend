@@ -1,5 +1,4 @@
 
-from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
 
@@ -9,7 +8,7 @@ from app.models.enums_model import CategoriaInsumos, UnidadeMedida
 
 
 class CreateInsumo(BaseModel):
-    restaurante_id: UUID
+    restaurante_id: int
     nome: str = Field(min_length=1, max_length=150)
     categoria: CategoriaInsumos
     unidade_medida: UnidadeMedida
@@ -29,8 +28,8 @@ class UpdateInsumo(BaseModel):
 class InsumoResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
-    restaurante_id: UUID
+    id : int
+    restaurante_id: int
     nome: str
     categoria: CategoriaInsumos
     unidade_medida: UnidadeMedida

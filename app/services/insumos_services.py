@@ -1,6 +1,3 @@
-
-from uuid import UUID
-
 from sqlalchemy.orm import Session
 
 from app.models.insumo_model import Insumo
@@ -14,8 +11,8 @@ def criar_insumo(data: CreateInsumo, db: Session):
     if not data.restaurante_id:
         raise DadosInvalidosInsumo("ID do restaurante é obrigatório")
 
-    if not isinstance(data.restaurante_id, UUID):
-        raise DadosInvalidosInsumo("ID do restaurante deve ser um UUID válido")
+    if not isinstance(data.restaurante_id, int):
+        raise DadosInvalidosInsumo("ID do restaurante deve ser um inteiro válido")
     
     insumo = Insumo(**data.model_dump())
 
@@ -26,13 +23,10 @@ def criar_insumo(data: CreateInsumo, db: Session):
     return insumo
 
 
-def listar_insumos(restaurante_id: UUID, db: Session):
+def listar_insumos(restaurante_id: int, db: Session):
     
     if not restaurante_id:
         raise DadosInvalidosInsumo("ID do restaurante é obrigatório")
-
-    if not isinstance(restaurante_id, UUID):
-        raise DadosInvalidosInsumo("ID do restaurante deve ser um UUID válido")
 
     if not db.query(Insumo).filter(Insumo.restaurante_id == restaurante_id).first():
         raise InsumoNaoEncontrado("Nenhum insumo encontrado para o restaurante especificado")
@@ -44,12 +38,9 @@ def listar_insumos(restaurante_id: UUID, db: Session):
     )
 
 
-def buscar_insumo(insumo_id: UUID, db: Session):
+def buscar_insumo(insumo_id: int, db: Session):
     if not insumo_id:
         raise DadosInvalidosInsumo("ID do insumo é obrigatório")
-
-    if not isinstance(insumo_id, UUID):
-        raise DadosInvalidosInsumo("ID do insumo deve ser um UUID válido")
 
     if not db.query(Insumo).filter(Insumo.id == insumo_id).first():
         raise InsumoNaoEncontrado("Insumo não encontrado")
@@ -63,12 +54,9 @@ def buscar_insumo(insumo_id: UUID, db: Session):
     return insumo
 
 
-def atualizar_insumo(insumo_id: UUID, data: UpdateInsumo, db: Session):
+def atualizar_insumo(insumo_id: int, data: UpdateInsumo, db: Session):
     if not insumo_id:
         raise DadosInvalidosInsumo("ID do insumo é obrigatório")
-
-    if not isinstance(insumo_id, UUID):
-        raise DadosInvalidosInsumo("ID do insumo deve ser um UUID válido")
 
     if not db.query(Insumo).filter(Insumo.id == insumo_id).first():
         raise InsumoNaoEncontrado("Insumo não encontrado")
@@ -86,9 +74,7 @@ def atualizar_insumo(insumo_id: UUID, data: UpdateInsumo, db: Session):
     return insumo
 
 
-def deletar_insumo(insumo_id: UUID, db: Session):
-    if not isinstance(insumo_id, UUID):
-        raise DadosInvalidosInsumo("ID do insumo deve ser um UUID válido")
+def deletar_insumo(insumo_id: int, db: Session):
 
     if not db.query(Insumo).filter(Insumo.id == insumo_id).first():
         raise InsumoNaoEncontrado("Insumo não encontrado")

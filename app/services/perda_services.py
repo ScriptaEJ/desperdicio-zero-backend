@@ -2,7 +2,6 @@
 
 from math import ceil
 from decimal import Decimal
-from uuid import UUID
 
 from sqlalchemy.orm import Session
 
@@ -76,7 +75,7 @@ def listar_perdas(
 
 
 def buscar_perda(
-    perda_id: UUID,
+    perda_id: int,
     db: Session
 ):
     perda = db.query(Perda).filter(
@@ -90,7 +89,7 @@ def buscar_perda(
 
 
 def atualizar_perda(
-    perda_id: UUID,
+    perda_id: int,
     data: UpdatePerda,
     db: Session
 ):
@@ -123,7 +122,7 @@ def atualizar_perda(
 
 
 def excluir_perda(
-    perda_id: UUID,
+    perda_id: int,
     db: Session
 ):
     perda = buscar_perda(perda_id, db)

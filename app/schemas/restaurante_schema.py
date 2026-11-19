@@ -16,7 +16,7 @@ class createRestaurante(BaseModel):
 class RestauranteResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
+    id: int
     nome: str
     cwid: Optional[str]
     custo_medio_kg: Decimal

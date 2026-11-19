@@ -14,8 +14,8 @@ from app.models.enums_model import (
 
 
 class CreatePerda(BaseModel):
-    restaurante_id: UUID
-    insumo_id: UUID | None = None
+    restaurante_id: int
+    insumo_id: int | None = None
     tipo_registro: TipoRegistroPerda
     quantidade: Decimal = Field(gt=0)
     unidade_medida: UnidadeMedida
@@ -27,7 +27,7 @@ class CreatePerda(BaseModel):
 
 
 class UpdatePerda(BaseModel):
-    insumo_id: UUID | None = None
+    insumo_id: int | None = None
     tipo_registro: TipoRegistroPerda | None = None
     quantidade: Decimal | None = Field(default=None, gt=0)
     unidade_medida: UnidadeMedida | None = None
@@ -39,9 +39,9 @@ class UpdatePerda(BaseModel):
 
 
 class PerdaResponse(BaseModel):
-    id: UUID
-    restaurante_id: UUID
-    insumo_id: UUID | None
+    id: int
+    restaurante_id: int
+    insumo_id: int | None
     usuario_id: int
     tipo_registro: TipoRegistroPerda
     quantidade: Decimal

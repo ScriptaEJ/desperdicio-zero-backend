@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from math import ceil
 from typing import Optional
-from uuid import UUID
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -30,7 +29,7 @@ def create_restaurante(db: Session, restaurante: createRestaurante) -> Restauran
     db.refresh(novo_restaurante)
     return RestauranteResponse.from_orm(novo_restaurante)
 
-def get_restaurante_by_id(db: Session, restaurante_id: UUID) -> Optional[RestauranteResponse]:
+def get_restaurante_by_id(db: Session, restaurante_id: int) -> Optional[RestauranteResponse]:
     restaurante = db.query(Restaurante).filter(Restaurante.id == restaurante_id).first()
     if restaurante:
         return RestauranteResponse.from_orm(restaurante)
@@ -54,7 +53,7 @@ def get_restaurantes_paginated(db: Session, page: int, size: int) -> Restaurante
         items=items
     )
 
-def update_restaurante(db: Session, restaurante_id: UUID, restaurante_update: UpdateRestaurante) -> Optional[RestauranteResponse]:
+def update_restaurante(db: Session, restaurante_id: int, restaurante_update: UpdateRestaurante) -> Optional[RestauranteResponse]:
     restaurante = db.query(Restaurante).filter(Restaurante.id == restaurante_id).first()
     if not restaurante:
         return RestauranteNaoEncontrado
@@ -70,7 +69,7 @@ def update_restaurante(db: Session, restaurante_id: UUID, restaurante_update: Up
     db.refresh(restaurante)
     return RestauranteResponse.from_orm(restaurante)
 
-def delete_restaurante(db: Session, restaurante_id: UUID) -> bool:
+def delete_restaurante(db: Session, restaurante_id: int) -> bool:
     restaurante = db.query(Restaurante).filter(Restaurante.id == restaurante_id).first()
     if not restaurante:
         return RestauranteNaoEncontrado

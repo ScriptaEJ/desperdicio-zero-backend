@@ -1,6 +1,4 @@
 
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
@@ -74,7 +72,7 @@ def listar_registros_perda(
     dependencies=[Depends(autorizar_perfis("admin", "user"))]
 )
 def obter_perda(
-    perda_id: UUID,
+    perda_id: int,
     db: Session = Depends(get_db)
 ):
     try:
@@ -93,7 +91,7 @@ def obter_perda(
     dependencies=[Depends(autorizar_perfis("admin", "user"))]
 )
 def editar_perda(
-    perda_id: UUID,
+    perda_id: int,
     data: UpdatePerda,
     db: Session = Depends(get_db)
 ):
@@ -112,7 +110,7 @@ def editar_perda(
     dependencies=[Depends(autorizar_perfis("admin", "user"))]
 )
 def remover_perda(
-    perda_id: UUID,
+    perda_id: int,
     db: Session = Depends(get_db)
 ):
     try:

@@ -9,20 +9,19 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Enum,
+    Integer,
     text
 )
-from sqlalchemy.dialects.postgresql import UUID
 from app.models.enums_model import CategoriaInsumos, UnidadeMedida
-import uuid
 
 
 class Insumo(Base):
     __tablename__ = "insumos"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, index=True)
 
     restaurante_id = Column(
-        UUID(as_uuid=True),
+        Integer,
         ForeignKey("restaurantes.id"),
         nullable=False
     )

@@ -11,29 +11,27 @@ from sqlalchemy import (
     ForeignKey,
     Enum
 )
-from sqlalchemy.dialects.postgresql import UUID
 from app.models.enums_model import (
     TipoRegistroPerda,
     MotivoPerda,
     Turno,
     UnidadeMedida
 )
-import uuid
 
 
 class Perda(Base):
     __tablename__ = "perdas"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, index=True)
 
     restaurante_id = Column(
-        UUID(as_uuid=True),
+        Integer,
         ForeignKey("restaurantes.id"),
         nullable=False
     )
 
     insumo_id = Column(
-        UUID(as_uuid=True),
+        Integer,
         ForeignKey("insumos.id"),
         nullable=True
     )

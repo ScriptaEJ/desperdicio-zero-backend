@@ -21,7 +21,7 @@ from app.services.restaurante_services import (
 
 router = APIRouter(prefix="/restaurantes", tags=["Restaurantes"])
 
-@router.post("/", response_model=RestauranteResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(autorizar_perfis("admin"))])
+@router.post("/", response_model=RestauranteResponse, status_code=status.HTTP_201_CREATED)
 def create_restaurante_endpoint(
     restaurante: createRestaurante, db: Session = Depends(get_db)
 ):

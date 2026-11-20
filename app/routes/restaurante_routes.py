@@ -16,16 +16,22 @@ from app.services.restaurante_services import (
     get_restaurantes_paginated,
     update_restaurante,
 )
-
+from app.models.usuario_model import Usuario
 router = APIRouter(prefix="/restaurantes", tags=["Restaurantes"])
 
-@router.post("/", response_model=RestauranteResponse, status_code=status.HTTP_201_CREATED)
-def create_restaurante_endpoint(
-    restaurante: createRestaurante, db: Session = Depends(get_db)
+@router.post("/", response_model=RestauranteResponse, status_code=201)
+def criar_restaurante(
+    data: createRestaurante,
+    usuario: dict = Depends(autorizar_perfis("admin", "user")),
+    db: Session = Depends(get_db),
 ):
-    return create_restaurante(db, restaurante)
+    usuario_db = db.query(Usuario).filter(Usuario.email == usuario.get("sub")).first()
+    if not usuario_db:
+        raise HTTPException(status_code=401, detail="Usuário autenticado não encontrado")
 
-@router.get("/{restaurante_id}", response_model=RestauranteResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+    return create_restaurante(db, data, usuario_db.id)
+
+@router.get("/{restaurante_id}", response_model=RestauranteResponse, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def get_restaurante_endpoint(
     restaurante_id: int, db: Session = Depends(get_db)
 ):
@@ -34,7 +40,7 @@ def get_restaurante_endpoint(
         raise RestauranteNaoEncontrado
     return restaurante
 
-@router.get("/", response_model=RestaurantesPaginados, dependencies=[Depends(autorizar_perfis("admin"))])
+@router.get("/", response_model=RestaurantesPaginados, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def get_restaurantes_paginated_endpoint(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1),
@@ -42,7 +48,7 @@ def get_restaurantes_paginated_endpoint(
 ):
     return get_restaurantes_paginated(db, page, size)
 
-@router.put("/{restaurante_id}", response_model=RestauranteResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+@router.put("/{restaurante_id}", response_model=RestauranteResponse, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def update_restaurante_endpoint(
     restaurante_id: int,
     restaurante_update: UpdateRestaurante,
@@ -53,7 +59,7 @@ def update_restaurante_endpoint(
         raise RestauranteNaoEncontrado
     return updated_restaurante
 
-@router.delete("/{restaurante_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(autorizar_perfis("admin"))])
+@router.delete("/{restaurante_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def delete_restaurante_endpoint(
     restaurante_id: int, db: Session = Depends(get_db)
 ):

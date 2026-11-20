@@ -10,3 +10,5 @@ python-jose
 resend
 werkzeug
 pydantic[email]
+reportlab 
+openpyxl

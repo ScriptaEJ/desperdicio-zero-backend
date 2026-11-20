@@ -1,7 +1,7 @@
 
 from math import ceil
 from decimal import Decimal
-
+from app.models.insumo_model import Insumo
 from sqlalchemy.orm import Session
 
 from app.models.perda_model import Perda
@@ -15,33 +15,33 @@ from app.exceptions.exceptions import (
 def criar_perda(
     data: CreatePerda,
     usuario_id: int,
-    db: Session
+    restaurante_id: int,
+    db: Session,
 ):
     if data.quantidade <= 0:
-        raise PerdaDadosInvalidos(
-            "A quantidade deve ser maior que zero."
-        )
+        raise PerdaDadosInvalidos("A quantidade deve ser maior que zero.")
 
     if data.custo_unitario <= 0:
-        raise PerdaDadosInvalidos(
-            "O custo unitário deve ser maior que zero."
-        )
+        raise PerdaDadosInvalidos("O custo unitário deve ser maior que zero.")
+
+    # garante que o insumo pertence ao restaurante do usuário
+    insumo = (
+        db.query(Insumo)
+        .filter(Insumo.id == data.insumo_id, Insumo.restaurante_id == restaurante_id)
+        .first()
+    )
 
     dados = data.model_dump()
-
     dados["usuario_id"] = usuario_id
-
+    dados["restaurante_id"] = restaurante_id
     dados["valor_total"] = (
-        Decimal(str(data.quantidade)) *
-        Decimal(str(data.custo_unitario))
+        Decimal(str(data.quantidade)) * Decimal(str(data.custo_unitario))
     )
 
     perda = Perda(**dados)
-
     db.add(perda)
     db.commit()
     db.refresh(perda)
-
     return perda
 
 

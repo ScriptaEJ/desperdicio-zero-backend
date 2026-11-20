@@ -14,7 +14,6 @@ from app.models.enums_model import (
 
 
 class CreatePerda(BaseModel):
-    restaurante_id: int
     insumo_id: int | None = None
     tipo_registro: TipoRegistroPerda
     quantidade: Decimal = Field(gt=0)

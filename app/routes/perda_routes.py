@@ -1,7 +1,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-
+from app.models.restaurante_usuario_model import RestauranteUsuario  # ajuste o caminho
 from app.database.database import get_db
 from app.middlewares.auth import autorizar_perfis
 from app.models.usuario_model import Usuario
@@ -22,34 +22,32 @@ from app.services.perda_services import (
     PerdaNaoEncontrada
 )
 
-
 perda_router = APIRouter(tags=["05. Perdas"])
 
-
-
-@perda_router.post(
-    "/perdas",
-    response_model=PerdaResponse,
-    status_code=201
-)
+@perda_router.post("/perdas", response_model=PerdaResponse, status_code=201)
 def registrar_perda(
     data: CreatePerda,
     usuario: dict = Depends(autorizar_perfis("admin", "user")),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     email = usuario.get("sub")
 
-    usuario_db = db.query(Usuario).filter(
-        Usuario.email == email
-    ).first()
-
+    usuario_db = db.query(Usuario).filter(Usuario.email == email).first()
     if not usuario_db:
+        raise HTTPException(status_code=401, detail="Usuário autenticado não encontrado")
+
+    vinculo = (
+        db.query(RestauranteUsuario)
+        .filter(RestauranteUsuario.usuario_id == usuario_db.id)
+        .first()
+    )
+    if not vinculo:
         raise HTTPException(
-            status_code=401,
-            detail="Usuário autenticado não encontrado"
+            status_code=403,
+            detail="Usuário não está vinculado a nenhum restaurante",
         )
 
-    return criar_perda(data, usuario_db.id, db)
+    return criar_perda(data, usuario_db.id, vinculo.restaurante_id, db)
 
 
 

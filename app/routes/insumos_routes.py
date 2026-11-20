@@ -14,21 +14,21 @@ from app.services.insumos_services import (
 
 insumos_routes = APIRouter(tags=["04. Insumos"])
 
-@insumos_routes.post("/insumos", response_model=InsumoResponse, status_code=201, dependencies=[Depends(autorizar_perfis("admin"))])
+@insumos_routes.post("/insumos", response_model=InsumoResponse, status_code=201, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def create_insumo(
     data: CreateInsumo,
     db: Session = Depends(get_db),
 ):
     return criar_insumo(data, db)
 
-@insumos_routes.get("/insumos", response_model=list[InsumoResponse], dependencies=[Depends(autorizar_perfis("admin"))])
+@insumos_routes.get("/insumos", response_model=list[InsumoResponse], dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def get_insumos(
     restaurante_id: str = Query(..., description="ID do restaurante"),
     db: Session = Depends(get_db),
 ):
     return listar_insumos(restaurante_id, db)
 
-@insumos_routes.get("/insumos/{id}", response_model=InsumoResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+@insumos_routes.get("/insumos/{id}", response_model=InsumoResponse, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def get_insumo_by_id(
     id: str,
     db: Session = Depends(get_db),
@@ -38,7 +38,7 @@ def get_insumo_by_id(
         raise HTTPException(status_code=404, detail="Insumo não encontrado")
     return insumo
 
-@insumos_routes.patch("/insumos/{id}", response_model=InsumoResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+@insumos_routes.patch("/insumos/{id}", response_model=InsumoResponse, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def update_insumo_by_id(
     id: str,
     data: UpdateInsumo,
@@ -49,7 +49,7 @@ def update_insumo_by_id(
         raise HTTPException(status_code=404, detail="Insumo não encontrado")
     return insumo
 
-@insumos_routes.delete("/insumos/{id}", response_model=InsumoResponse, dependencies=[Depends(autorizar_perfis("admin"))])
+@insumos_routes.delete("/insumos/{id}", response_model=InsumoResponse, dependencies=[Depends(autorizar_perfis("admin", "user"))])
 def delete_insumo_by_id(
     id: str,
     db: Session = Depends(get_db),

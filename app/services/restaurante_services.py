@@ -5,6 +5,7 @@ from typing import Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.exceptions.exceptions import RestauranteNaoEncontrado, RestauranteJaExiste
+from app.models.restaurante_usuario_model import RestauranteUsuario
 from app.models.restaurante_model import Restaurante
 from app.schemas.restaurante_schema import (
     RestauranteResponse,
@@ -12,20 +13,35 @@ from app.schemas.restaurante_schema import (
     UpdateRestaurante,
     createRestaurante,
 )
+def create_restaurante(
+    db: Session,
+    restaurante: createRestaurante,
+    usuario_id: int,
+) -> RestauranteResponse:
+    if db.query(Restaurante).filter(Restaurante.nome == restaurante.nome).first():
+        raise RestauranteJaExiste
 
-#-------logic for restaurante services-------
-def create_restaurante(db: Session, restaurante: createRestaurante) -> RestauranteResponse:
     novo_restaurante = Restaurante(
         nome=restaurante.nome,
         cwid=restaurante.cwid,
         custo_medio_kg=restaurante.custo_medio_kg,
-        criado_em=datetime.now(timezone.utc)
+        criado_em=datetime.now(timezone.utc),
     )
-    if db.query(Restaurante).filter(Restaurante.nome == novo_restaurante.nome).first():
-        raise RestauranteJaExiste
-        
-    db.add(novo_restaurante)
-    db.commit()
+
+    try:
+        db.add(novo_restaurante)
+        db.flush()  # gera o id (uuid) sem commitar
+
+        db.add(RestauranteUsuario(
+            usuario_id=usuario_id,
+            restaurante_id=novo_restaurante.id,
+        ))
+
+        db.commit()  # restaurante + vínculo juntos, ou nada
+    except Exception:
+        db.rollback()
+        raise
+
     db.refresh(novo_restaurante)
     return RestauranteResponse.from_orm(novo_restaurante)
 

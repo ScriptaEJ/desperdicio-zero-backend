@@ -127,6 +127,28 @@ def update_user(id: int, data: UpdateUser, db: Session):
     return user
 
 
+def update_current_user(
+    usuario_id: int,
+    data: UpdateUser,
+    db: Session
+):
+    user = get_user_id(usuario_id, db)
+
+    dados_atualizados = data.model_dump(
+        exclude_unset=True,
+        exclude={"perfil"}
+    )
+
+    for campo, valor in dados_atualizados.items():
+        if valor is not None:
+            setattr(user, campo, valor)
+
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
 # Desativar usuário
 def delete_user(id: int, db: Session):
     user = get_user_id(id, db)

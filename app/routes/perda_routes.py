@@ -18,13 +18,13 @@ from app.services.perda_services import (
     listar_perdas,
     buscar_perda,
     atualizar_perda,
-    excluir_perda,
-    PerdaNaoEncontrada
+    excluir_perda
 )
+
+from app.exceptions.exceptions import PerdaNaoEncontrada
 
 
 perda_router = APIRouter(tags=["05. Perdas"])
-
 
 
 @perda_router.post(
@@ -34,49 +34,42 @@ perda_router = APIRouter(tags=["05. Perdas"])
 )
 def registrar_perda(
     data: CreatePerda,
-    usuario: dict = Depends(autorizar_perfis("admin", "user")),
+    usuario: Usuario = Depends(
+        autorizar_perfis("admin", "user")
+    ),
     db: Session = Depends(get_db)
 ):
-    email = usuario.get("sub")
-
-    usuario_db = db.query(Usuario).filter(
-        Usuario.email == email
-    ).first()
-
-    if not usuario_db:
-        raise HTTPException(
-            status_code=401,
-            detail="Usuário autenticado não encontrado"
-        )
-
-    return criar_perda(data, usuario_db.id, db)
-
+    return criar_perda(data, usuario.id, db)
 
 
 @perda_router.get(
     "/perdas",
-    response_model=PerdasPaginadas,
-    dependencies=[Depends(autorizar_perfis("admin", "user"))]
+    response_model=PerdasPaginadas
 )
 def listar_registros_perda(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
+    usuario: Usuario = Depends(
+        autorizar_perfis("admin", "user")
+    ),
     db: Session = Depends(get_db)
 ):
-    return listar_perdas(page, size, db)
+    return listar_perdas(page, size, usuario.id, db)
 
 
 @perda_router.get(
     "/perdas/{perda_id}",
-    response_model=PerdaResponse,
-    dependencies=[Depends(autorizar_perfis("admin", "user"))]
+    response_model=PerdaResponse
 )
 def obter_perda(
     perda_id: int,
+    usuario: Usuario = Depends(
+        autorizar_perfis("admin", "user")
+    ),
     db: Session = Depends(get_db)
 ):
     try:
-        return buscar_perda(perda_id, db)
+        return buscar_perda(perda_id, usuario.id, db)
 
     except PerdaNaoEncontrada:
         raise HTTPException(
@@ -87,16 +80,23 @@ def obter_perda(
 
 @perda_router.patch(
     "/perdas/{perda_id}",
-    response_model=PerdaResponse,
-    dependencies=[Depends(autorizar_perfis("admin", "user"))]
+    response_model=PerdaResponse
 )
 def editar_perda(
     perda_id: int,
     data: UpdatePerda,
+    usuario: Usuario = Depends(
+        autorizar_perfis("admin", "user")
+    ),
     db: Session = Depends(get_db)
 ):
     try:
-        return atualizar_perda(perda_id, data, db)
+        return atualizar_perda(
+            perda_id,
+            data,
+            usuario.id,
+            db
+        )
 
     except PerdaNaoEncontrada:
         raise HTTPException(
@@ -105,16 +105,16 @@ def editar_perda(
         )
 
 
-@perda_router.delete(
-    "/perdas/{perda_id}",
-    dependencies=[Depends(autorizar_perfis("admin", "user"))]
-)
+@perda_router.delete("/perdas/{perda_id}")
 def remover_perda(
     perda_id: int,
+    usuario: Usuario = Depends(
+        autorizar_perfis("admin", "user")
+    ),
     db: Session = Depends(get_db)
 ):
     try:
-        return excluir_perda(perda_id, db)
+        return excluir_perda(perda_id, usuario.id, db)
 
     except PerdaNaoEncontrada:
         raise HTTPException(

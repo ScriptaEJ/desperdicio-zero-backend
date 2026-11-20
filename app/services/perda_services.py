@@ -32,8 +32,6 @@ def criar_perda(
         .filter(Insumo.id == data.insumo_id, Insumo.restaurante_id == restaurante_id)
         .first()
     )
-    if not insumo:
-        raise PerdaDadosInvalidos("Insumo não encontrado neste restaurante.")
 
     dados = data.model_dump()
     dados["usuario_id"] = usuario_id

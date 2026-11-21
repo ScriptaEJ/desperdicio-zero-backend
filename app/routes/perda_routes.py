@@ -5,6 +5,7 @@ from app.models.restaurante_usuario_model import RestauranteUsuario  # ajuste o 
 from app.database.database import get_db
 from app.middlewares.auth import autorizar_perfis
 from app.models.usuario_model import Usuario
+from app.dependencies.restaurante_dependency import get_restaurante_id
 
 from app.schemas.perda_schemas import (
     CreatePerda,
@@ -57,12 +58,10 @@ def registrar_perda(
 def listar_registros_perda(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
-    usuario: Usuario = Depends(
-        autorizar_perfis("admin", "user")
-    ),
+    restaurante_id: int = Depends(get_restaurante_id),
     db: Session = Depends(get_db)
 ):
-    return listar_perdas(page, size, usuario.id, db)
+    return listar_perdas(page, size, restaurante_id, db)
 
 
 @perda_router.get(

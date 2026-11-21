@@ -44,22 +44,14 @@ def criar_perda(
     db.refresh(perda)
     return perda
 
+from math import ceil
 
-def listar_perdas(
-    page: int,
-    size: int,
-    usuario_id: int,
-    db: Session
-):
-    query = db.query(Perda).filter(
-        Perda.usuario_id == usuario_id
-    )
+def listar_perdas(page: int, size: int, restaurante_id: int, db: Session):
+    base = db.query(Perda).filter(Perda.restaurante_id == restaurante_id)
 
-    total = query.count()
-
-    perdas = (
-        query
-        .order_by(Perda.data_perda.desc())
+    total = base.count()
+    itens = (
+        base.order_by(Perda.data_perda.desc())
         .offset((page - 1) * size)
         .limit(size)
         .all()
@@ -70,7 +62,7 @@ def listar_perdas(
         "size": size,
         "total": total,
         "total_pages": ceil(total / size) if total else 0,
-        "items": perdas
+        "items": itens,
     }
 
 

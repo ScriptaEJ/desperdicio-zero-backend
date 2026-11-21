@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -13,6 +14,26 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# ---------------------------------------------------------------------------
+# URL do banco: vem de variável de ambiente (o alembic.ini NÃO executa Python)
+# ---------------------------------------------------------------------------
+# AJUSTE: use o nome da variável que existe no seu Render/docker-compose.
+db_url = os.getenv("DB_URL_DOCKER") or os.getenv("DATABASE_URL")
+if not db_url:
+    raise RuntimeError(
+        "Defina a variável de ambiente com a URL do banco "
+        "(DB_URL_DOCKER ou DATABASE_URL)."
+    )
+
+# normaliza o prefixo para o driver psycopg2 (o Render entrega "postgres://")
+for prefixo in ("postgres://", "postgresql://", "postgresql+psycopg://"):
+    if db_url.startswith(prefixo):
+        db_url = "postgresql+psycopg2://" + db_url[len(prefixo):]
+        break
+
+# o configparser trata "%" como especial; se a senha tiver %, precisa dobrar
+config.set_main_option("sqlalchemy.url", db_url.replace("%", "%%"))
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -34,11 +55,6 @@ from app.models.restaurante_usuario_model import RestauranteUsuario
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
 
 
 def run_migrations_offline() -> None:

@@ -49,9 +49,10 @@ def get_user_by_id(
 def update_user_by_id(
     id: int,
     data: UpdateUser,
-    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    return update_user(id, data, db)
+    return update_current_user(usuario.id, data, db)
 
 
 @user_routes.delete("/user/{id}", dependencies=[Depends(autorizar_perfis("admin", "user"))])

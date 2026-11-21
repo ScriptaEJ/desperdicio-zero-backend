@@ -1,5 +1,4 @@
 
-
 from math import ceil
 from decimal import Decimal
 from app.models.insumo_model import Insumo
@@ -11,7 +10,6 @@ from app.exceptions.exceptions import (
     PerdaNaoEncontrada,
     PerdaDadosInvalidos
 )
-
 
 
 def criar_perda(
@@ -47,13 +45,15 @@ def criar_perda(
     return perda
 
 
-
 def listar_perdas(
     page: int,
     size: int,
+    usuario_id: int,
     db: Session
 ):
-    query = db.query(Perda)
+    query = db.query(Perda).filter(
+        Perda.usuario_id == usuario_id
+    )
 
     total = query.count()
 
@@ -76,10 +76,12 @@ def listar_perdas(
 
 def buscar_perda(
     perda_id: int,
+    usuario_id: int,
     db: Session
 ):
     perda = db.query(Perda).filter(
-        Perda.id == perda_id
+        Perda.id == perda_id,
+        Perda.usuario_id == usuario_id
     ).first()
 
     if not perda:
@@ -91,11 +93,16 @@ def buscar_perda(
 def atualizar_perda(
     perda_id: int,
     data: UpdatePerda,
+    usuario_id: int,
     db: Session
 ):
-    perda = buscar_perda(perda_id, db)
+    perda = buscar_perda(perda_id, usuario_id, db)
 
     dados = data.model_dump(exclude_unset=True)
+
+    # Impede alteração da identidade e do proprietário
+    dados.pop("id", None)
+    dados.pop("usuario_id", None)
 
     for campo, valor in dados.items():
         setattr(perda, campo, valor)
@@ -123,9 +130,10 @@ def atualizar_perda(
 
 def excluir_perda(
     perda_id: int,
+    usuario_id: int,
     db: Session
 ):
-    perda = buscar_perda(perda_id, db)
+    perda = buscar_perda(perda_id, usuario_id, db)
 
     db.delete(perda)
     db.commit()

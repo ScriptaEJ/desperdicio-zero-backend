@@ -42,19 +42,26 @@ def autorizar_perfis(*perfis_permitidos: Perfil):
 
 # ----------------------- USUARIO ATUAL PELO TOKEN -----------------------
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
     token = credentials.credentials
-
     payload = autentica(token)
 
-    user = db.query(Usuario).filter(
-        Usuario.email == payload["sub"]
+    email = payload.get("sub")
+
+    if not email:
+        raise TokenNaoAutenticado()
+
+    usuario = db.query(Usuario).filter(
+        Usuario.email == email
     ).first()
 
-    if not user:
+    if not usuario:
         raise UserNotFound()
 
-    if not user.ativo:
+    if not usuario.ativo:
         raise DesactivatedUser()
 
-    return payload
+    return usuario

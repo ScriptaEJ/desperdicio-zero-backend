@@ -6,7 +6,7 @@ from app.database.database import get_db
 from app.middlewares.auth import autorizar_perfis
 from app.models.usuario_model import Usuario
 from app.dependencies.restaurante_dependency import get_restaurante_id
-
+from app.exceptions.exceptions import PerdaNaoEncontrada
 from app.schemas.perda_schemas import (
     CreatePerda,
     UpdatePerda,
